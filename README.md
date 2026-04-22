@@ -99,9 +99,9 @@ mvn spring-boot:run
 # 数据库连接
 spring:
   datasource:
-    url: jdbc:oceanbase:oracle://120.55.98.148:2881/oracle_db
-    username: sys@oracle_db
-    password: change_on_install
+    url: jdbc:
+    username: 
+    password: 
     druid:
       max-active: 20  # 最大连接数
 
