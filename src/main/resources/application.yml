@@ -14,9 +14,9 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.oceanbase.jdbc.Driver
-    url: jdbc:oceanbase:oracle://120.55.98.148:2881/sys?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&connectTimeout=30000&socketTimeout=300000
-    username: sys@oracle_db
-    password: change_on_install
+    url: 
+    username: 
+    password: l
     druid:
       initial-size: 5
       min-idle: 5
