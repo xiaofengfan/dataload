@@ -1,0 +1,3 @@
+INSERT INTO SYS.DATA_SOURCE_CONFIGS (CONFIG_ID,NAME,DB_TYPE,HOST,PORT,DATABASE,USERNAME,PASSWORD,DRIVER_CLASS_NAME,JDBC_URL,IS_DEFAULT,CREATE_TIME,UPDATE_TIME) VALUES
+	 ('BDSS','BDSS OceanBase','oceanbase','120.55.98.148',2881,'sys','sys@oracle_db','change_on_install','com.oceanbase.jdbc.Driver','jdbc:oceanbase:oracle://120.55.98.148:2881/sys?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true',1,NULL,NULL),
+	 ('default','Default OceanBase','oceanbase','120.55.98.148',2881,'sys','sys@oracle_db','change_on_install','com.oceanbase.jdbc.Driver','jdbc:oceanbase:oracle://120.55.98.148:2881/sys?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true',1,'2026-04-22 21:03:59.238843','2026-04-22 21:09:29.515713');

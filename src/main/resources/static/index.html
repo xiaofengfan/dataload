@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>监管数据导入组件</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #303133;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .tab-item {
+            flex: 1;
+            padding: 16px 24px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: #606266;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-item:hover {
+            color: #409EFF;
+            background: #ecf5ff;
+        }
+
+        .tab-item.active {
+            color: #409EFF;
+            border-bottom-color: #409EFF;
+            background: #ecf5ff;
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 0 0 8px 8px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #303133;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #ebeef5;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            gap: 16px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            color: #606266;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #409EFF;
+            box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #409EFF;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #66b1ff;
+        }
+
+        .btn-danger {
+            background: #f56c6c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #f78989;
+        }
+
+        .btn-success {
+            background: #67c23a;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #85ce61;
+        }
+
+        .btn-warning {
+            background: #e6a23c;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #ebb563;
+        }
+
+        .btn-secondary {
+            background: #909399;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #a6a9ad;
+        }
+
+        .btn-sm {
+            padding: 6px 16px;
+            font-size: 13px;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed #dcdfe6;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafafa;
+        }
+
+        .upload-area:hover {
+            border-color: #409EFF;
+            background: #ecf5ff;
+        }
+
+        .upload-area.dragover {
+            border-color: #409EFF;
+            background: #ecf5ff;
+        }
+
+        .upload-area.uploading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #909399;
+            margin-bottom: 12px;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            color: #606266;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: #909399;
+            margin-top: 8px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-info {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f4f4f5;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        .file-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-size: 13px;
+        }
+
+        .file-info-label {
+            color: #909399;
+        }
+
+        .file-info-value {
+            color: #303133;
+            font-weight: 500;
+        }
+
+        .upload-progress-container {
+            margin-top: 16px;
+            display: none;
+        }
+
+        .upload-progress-container.show {
+            display: block;
+        }
+
+        .upload-progress-bar-wrapper {
+            background: #ebeef5;
+            border-radius: 4px;
+            height: 24px;
+            overflow: hidden;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #67c23a 0%, #85ce61 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .task-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .task-table th,
+        .task-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ebeef5;
+        }
+
+        .task-table th {
+            font-size: 14px;
+            font-weight: 600;
+            color: #606266;
+            background: #f5f7fa;
+        }
+
+        .task-table td {
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.waiting {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .status-badge.importing {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .status-badge.completed {
+            background: #f0f9ff;
+            color: #52c41a;
+        }
+
+        .status-badge.failed {
+            background: #fff1f0;
+            color: #f5222d;
+        }
+
+        .status-badge.stopped {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .pagination-btn {
+            padding: 6px 14px;
+            border: 1px solid #dcdfe6;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            color: #409EFF;
+            border-color: #409EFF;
+        }
+
+        .pagination-btn.active {
+            background: #409EFF;
+            color: white;
+            border-color: #409EFF;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .modal-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #ebeef5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #909399;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #ebeef5;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #f0f9ff;
+            border: 1px solid #b7eb8f;
+            color: #52c41a;
+        }
+
+        .alert-error {
+            background: #fff1f0;
+            border: 1px solid #ffa39e;
+            color: #f5222d;
+        }
+
+        .alert-info {
+            background: #e6f7ff;
+            border: 1px solid #91d5ff;
+            color: #1890ff;
+        }
+
+        .datasource-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .datasource-card {
+            border: 1px solid #dcdfe6;
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s;
+        }
+
+        .datasource-card:hover {
+            border-color: #409EFF;
+            box-shadow: 0 2px 8px rgba(64, 158, 255, 0.1);
+        }
+
+        .datasource-card.default {
+            border-color: #67c23a;
+            background: #f6ffed;
+        }
+
+        .datasource-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .datasource-badge {
+            font-size: 12px;
+            background: #67c23a;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .datasource-info {
+            font-size: 13px;
+            color: #606266;
+            margin-bottom: 4px;
+        }
+
+        .datasource-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-card.total {
+            border-left: 4px solid #409EFF;
+        }
+
+        .stat-card.running {
+            border-left: 4px solid #E6A23C;
+        }
+
+        .stat-card.success {
+            border-left: 4px solid #67C23A;
+        }
+
+        .stat-card.failed {
+            border-left: 4px solid #F56C6C;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .stat-card.total .stat-value {
+            color: #409EFF;
+        }
+
+        .stat-card.running .stat-value {
+            color: #E6A23C;
+        }
+
+        .stat-card.success .stat-value {
+            color: #67C23A;
+        }
+
+        .stat-card.failed .stat-value {
+            color: #F56C6C;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #909399;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            padding: 10px 0;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            height: 60px;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: #dc2626;
+            margin-right: 16px;
+            letter-spacing: 1px;
+            background: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo span {
+            color: #dc2626;
+        }
+
+        .system-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo"><span>BONC</span></div>
+            <div class="system-title">监管数据导入组件</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab-item active" data-tab="import">数据导入</div>
+            <div class="tab-item" data-tab="tasks">任务管理</div>
+            <div class="tab-item" data-tab="datasources">数据源管理</div>
+        </div>
+
+        <!-- Import Tab -->
+        <div class="tab-content active" id="import-tab">
+            <div class="card">
+                <div class="card-title">文件上传与导入</div>
+                
+                <div id="import-alert"></div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="datasource-select">目标数据源</label>
+                        <select id="datasource-select">
+                            <option value="">加载中...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="target-table">目标表名</label>
+                        <input type="text" id="target-table" placeholder="请输入目标表名">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="file-encoding">文件编码</label>
+                        <select id="file-encoding">
+                            <option value="UTF-8">UTF-8</option>
+                            <option value="GBK">GBK</option>
+                            <option value="GB2312">GB2312</option>
+                            <option value="ISO-8859-1">ISO-8859-1</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="delimiter">分隔符</label>
+                        <select id="delimiter">
+                            <option value=",">逗号 (,)</option>
+                            <option value=";">分号 (;)</option>
+                            <option value="|">竖线 (|)</option>
+                            <option value="\t">制表符 (Tab)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="batch-size">JDBC 批量大小</label>
+                        <select id="batch-size">
+                            <option value="1000">1,000 行（超保守）</option>
+                            <option value="5000" selected>5,000 行（推荐）</option>
+                            <option value="10000">10,000 行（中等）</option>
+                            <option value="20000">20,000 行（高内存）</option>
+                            <option value="50000">50,000 行（高性能）</option>
+                            <option value="100000">100,000 行（超大）</option>
+                            <option value="200000">200,000 行（极致）</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="skip-header" checked>
+                            <label for="skip-header">跳过首行（表头）</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="file-preview" style="margin-bottom: 16px;"></div>
+
+                <!-- Upload Area -->
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">点击或拖拽文件到此处上传</div>
+                    <div class="upload-hint">支持 CSV、TXT 格式，文件大小不限</div>
+                    <input type="file" id="file-input" class="file-input" accept=".csv,.txt">
+                </div>
+
+                <!-- File Info -->
+                <div class="file-info" id="file-info">
+                    <div class="file-info-item">
+                        <span class="file-info-label">文件名：</span>
+                        <span class="file-info-value" id="file-name"></span>
+                    </div>
+                    <div class="file-info-item">
+                        <span class="file-info-label">文件大小：</span>
+                        <span class="file-info-value" id="file-size"></span>
+                    </div>
+                    <div class="file-info-item">
+                        <span class="file-info-label">包含表头：</span>
+                        <span class="file-info-value" id="has-header"></span>
+                    </div>
+                    <div class="file-info-item">
+                        <span class="file-info-label">表头预览：</span>
+                        <span class="file-info-value" id="header-preview" style="word-break: break-all;"></span>
+                    </div>
+                </div>
+
+                <!-- Progress -->
+                <div class="upload-progress-container" id="upload-progress">
+                    <div class="upload-progress-bar-wrapper">
+                        <div class="upload-progress-bar" id="progress-bar" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="upload-btn" disabled>开始导入</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks Tab -->
+        <div class="tab-content" id="tasks-tab">
+            <div class="card">
+                <div class="card-title">导入任务列表</div>
+
+                <!-- 指标卡片区域 -->
+                <div class="stats-container">
+                    <div class="stat-card total">
+                        <div class="stat-value" id="stat-total">0</div>
+                        <div class="stat-label">总任务数</div>
+                    </div>
+                    <div class="stat-card running">
+                        <div class="stat-value" id="stat-running">0</div>
+                        <div class="stat-label">执行中</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-value" id="stat-success">0</div>
+                        <div class="stat-label">已完成</div>
+                    </div>
+                    <div class="stat-card failed">
+                        <div class="stat-value" id="stat-failed">0</div>
+                        <div class="stat-label">失败/异常</div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="filter-status">状态筛选</label>
+                        <select id="filter-status">
+                            <option value="ALL">全部</option>
+                            <option value="WAITING">等待中</option>
+                            <option value="IMPORTING">导入中</option>
+                            <option value="COMPLETED">已完成</option>
+                            <option value="FAILED">失败</option>
+                            <option value="STOPPED">已停止</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="refresh-btn" style="visibility: hidden;">操作</label>
+                        <button class="btn btn-secondary" id="refresh-btn">刷新列表</button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="task-table">
+                        <thead>
+                            <tr>
+                                <th>任务 ID</th>
+                                <th>文件名</th>
+                                <th>目标表</th>
+                                <th>状态</th>
+                                <th>导入行数</th>
+                                <th>总行数</th>
+                                <th>进度</th>
+                                <th>创建时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="task-list"></tbody>
+                    </table>
+                </div>
+
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+
+        <!-- Datasources Tab -->
+        <div class="tab-content" id="datasources-tab">
+            <div class="card">
+                <div class="card-title">
+                    数据源管理
+                    <button class="btn btn-primary btn-sm" id="add-datasource-btn" style="float: right;">
+                        添加数据源
+                    </button>
+                </div>
+                
+                <div id="datasource-alert"></div>
+                <div class="datasource-list" id="datasource-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Detail Modal -->
+    <div class="modal" id="task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">任务详情</div>
+                <span class="modal-close" id="close-task-modal">×</span>
+            </div>
+            <div class="modal-body" id="task-detail-content"></div>
+        </div>
+    </div>
+
+    <!-- Datasource Modal -->
+    <div class="modal" id="datasource-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="datasource-modal-title">添加数据源</div>
+                <span class="modal-close" id="close-datasource-modal">×</span>
+            </div>
+            <div class="modal-body">
+                <form id="datasource-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="datasource-name">名称</label>
+                            <input type="text" id="datasource-name" placeholder="输入数据源名称">
+                        </div>
+                        <div class="form-group">
+                            <label for="datasource-type">数据库类型</label>
+                            <select id="datasource-type">
+                                <option value="oceanbase">OceanBase</option>
+                                <option value="mysql">MySQL</option>
+                                <option value="postgresql">PostgreSQL</option>
+                                <option value="oracle">Oracle</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="datasource-host">主机</label>
+                            <input type="text" id="datasource-host" placeholder="例如: 127.0.0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="datasource-port">端口</label>
+                            <input type="number" id="datasource-port" placeholder="例如: 2881">
+                        </div>
+                        <div class="form-group">
+                            <label for="datasource-database">数据库</label>
+                            <input type="text" id="datasource-database" placeholder="例如: sys">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="datasource-username">用户名</label>
+                            <input type="text" id="datasource-username" placeholder="输入用户名">
+                        </div>
+                        <div class="form-group">
+                            <label for="datasource-password">密码</label>
+                            <input type="password" id="datasource-password" placeholder="输入密码">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="datasource-driver">驱动类名（可选）</label>
+                            <input type="text" id="datasource-driver" placeholder="留空将自动猜测">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="datasource-url">JDBC URL（可选）</label>
+                            <textarea id="datasource-url" placeholder="留空将自动构建"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="datasource-default">
+                                <label for="datasource-default">设为默认数据源</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="test-connection-btn">测试连接</button>
+                <button class="btn btn-secondary" id="cancel-datasource-btn">取消</button>
+                <button class="btn btn-primary" id="save-datasource-btn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 应用状态
+        const state = {
+            currentTab: 'import',
+            currentPage: 1,
+            pageSize: 20,
+            currentStatusFilter: 'ALL',
+            selectedFile: null,
+            hasHeader: false,
+            headerPreview: '',
+            datasources: [],
+            currentDatasourceId: null
+        };
+
+        // DOM 元素
+        const elements = {
+            tabs: document.querySelectorAll('.tab-item'),
+            tabContents: document.querySelectorAll('.tab-content'),
+            uploadArea: document.getElementById('upload-area'),
+            fileInput: document.getElementById('file-input'),
+            fileInfo: document.getElementById('file-info'),
+            fileName: document.getElementById('file-name'),
+            fileSize: document.getElementById('file-size'),
+            hasHeaderEl: document.getElementById('has-header'),
+            headerPreviewEl: document.getElementById('header-preview'),
+            progressContainer: document.getElementById('upload-progress'),
+            progressBar: document.getElementById('progress-bar'),
+            uploadBtn: document.getElementById('upload-btn'),
+            taskList: document.getElementById('task-list'),
+            pagination: document.getElementById('pagination'),
+            filterStatus: document.getElementById('filter-status'),
+            refreshBtn: document.getElementById('refresh-btn'),
+            taskModal: document.getElementById('task-modal'),
+            closeTaskModal: document.getElementById('close-task-modal'),
+            taskDetailContent: document.getElementById('task-detail-content'),
+            importAlert: document.getElementById('import-alert'),
+            datasourceSelect: document.getElementById('datasource-select'),
+            datasourceList: document.getElementById('datasource-list'),
+            datasourceModal: document.getElementById('datasource-modal'),
+            datasourceAlert: document.getElementById('datasource-alert'),
+            addDatasourceBtn: document.getElementById('add-datasource-btn'),
+            closeDatasourceModal: document.getElementById('close-datasource-modal'),
+            saveDatasourceBtn: document.getElementById('save-datasource-btn'),
+            cancelDatasourceBtn: document.getElementById('cancel-datasource-btn'),
+            testConnectionBtn: document.getElementById('test-connection-btn')
+        };
+
+        // 初始化
+        async function init() {
+            setupTabs();
+            setupFileUpload();
+            setupTaskManagement();
+            await loadDatasources();
+            await loadTasks();
+            await loadTaskStats();
+        }
+
+        // Tab 切换
+        function setupTabs() {
+            elements.tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+                    switchTab(targetTab);
+                });
+            });
+        }
+
+        function switchTab(tabName) {
+            state.currentTab = tabName;
+            elements.tabs.forEach(t => t.classList.remove('active'));
+            elements.tabContents.forEach(c => c.classList.remove('active'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            
+            if (tabName === 'tasks') {
+                loadTasks();
+                loadTaskStats();
+            } else if (tabName === 'datasources') {
+                loadDatasourceList();
+            }
+        }
+
+        async function loadTaskStats() {
+            try {
+                const response = await fetch('/api/import/tasks/stats');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const stats = result.stats;
+                    document.getElementById('stat-total').textContent = stats.total || 0;
+                    document.getElementById('stat-running').textContent = (stats.waiting || 0) + (stats.importing || 0);
+                    document.getElementById('stat-success').textContent = stats.completed || 0;
+                    document.getElementById('stat-failed').textContent = (stats.failed || 0) + (stats.stopped || 0);
+                }
+            } catch (error) {
+                console.error('加载任务统计失败:', error);
+            }
+        }
+
+        // 文件上传
+        function setupFileUpload() {
+            const uploadArea = elements.uploadArea;
+            const fileInput = elements.fileInput;
+
+            // 点击上传
+            uploadArea.addEventListener('click', () => fileInput.click());
+
+            // 拖拽上传
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    handleFileSelect(e.dataTransfer.files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFileSelect(e.target.files[0]);
+                }
+            });
+
+            elements.uploadBtn.addEventListener('click', startImport);
+        }
+
+        async function handleFileSelect(file) {
+            state.selectedFile = file;
+            elements.fileInfo.classList.add('show');
+            elements.fileName.textContent = file.name;
+            elements.fileSize.textContent = formatFileSize(file.size);
+            elements.uploadBtn.disabled = false;
+
+            // 预览文件前几行
+            await previewFile(file);
+        }
+
+        async function previewFile(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const content = e.target.result;
+                    const lines = content.split(/\r?\n/).filter(l => l.trim() !== '');
+                    
+                    if (lines.length > 0) {
+                        const firstLine = lines[0];
+                        const delimiter = document.getElementById('delimiter').value;
+                        const delimiterToUse = delimiter === '\\t' ? '\t' : delimiter;
+                        const columns = firstLine.split(delimiterToUse);
+                        
+                        // 简单检测：如果列名包含字母或非纯数字，则认为是表头
+                        const isHeader = columns.some(col => {
+                            const trimmed = col.trim();
+                            return /[a-zA-Z]/.test(trimmed) || !/^\d+(\.\d+)?$/.test(trimmed);
+                        });
+
+                        state.hasHeader = isHeader;
+                        state.headerPreview = columns.slice(0, 10).map(c => c.trim()).join(', ') + 
+                                             (columns.length > 10 ? '...' : '');
+                        
+                        elements.hasHeaderEl.textContent = isHeader ? '是' : '否';
+                        elements.headerPreviewEl.textContent = state.headerPreview;
+                        
+                        // 如果检测到有表头，自动勾选跳过
+                        document.getElementById('skip-header').checked = isHeader;
+                    }
+                    resolve();
+                };
+                reader.readAsText(file, 'UTF-8');
+            });
+        }
+
+        async function startImport() {
+            if (!state.selectedFile) {
+                showAlert('请选择文件', 'error', 'import');
+                return;
+            }
+
+            const targetTable = document.getElementById('target-table').value.trim();
+            if (!targetTable) {
+                showAlert('请输入目标表名', 'error', 'import');
+                return;
+            }
+
+            const datasourceConfigId = document.getElementById('datasource-select').value;
+            if (!datasourceConfigId) {
+                showAlert('请选择数据源', 'error', 'import');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', state.selectedFile);
+            formData.append('targetTable', targetTable);
+            formData.append('dataSourceConfigId', datasourceConfigId);
+            formData.append('fileEncoding', document.getElementById('file-encoding').value);
+            formData.append('delimiter', document.getElementById('delimiter').value);
+            formData.append('skipHeader', document.getElementById('skip-header').checked ? '1' : '0');
+            formData.append('batchSize', document.getElementById('batch-size').value);
+            formData.append('threadCount', '4');
+
+            elements.uploadBtn.disabled = true;
+            elements.uploadArea.classList.add('uploading');
+            elements.progressContainer.classList.add('show');
+
+            try {
+                const response = await fetch('/api/import/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('文件上传成功，开始导入...', 'success', 'import');
+                    // 切换到任务列表查看
+                    setTimeout(() => {
+                        switchTab('tasks');
+                        loadTasks();
+                    }, 1000);
+                } else {
+                    showAlert('上传失败: ' + (result.message || '未知错误'), 'error', 'import');
+                }
+            } catch (error) {
+                showAlert('上传失败: ' + error.message, 'error', 'import');
+            } finally {
+                elements.uploadBtn.disabled = false;
+                elements.uploadArea.classList.remove('uploading');
+                elements.progressContainer.classList.remove('show');
+                resetUploadForm();
+            }
+        }
+
+        function resetUploadForm() {
+            state.selectedFile = null;
+            elements.fileInfo.classList.remove('show');
+            elements.fileInput.value = '';
+        }
+
+        // 任务管理
+        function setupTaskManagement() {
+            elements.filterStatus.addEventListener('change', () => {
+                state.currentStatusFilter = elements.filterStatus.value;
+                state.currentPage = 1;
+                loadTasks();
+            });
+
+            elements.refreshBtn.addEventListener('click', loadTasks);
+
+            elements.closeTaskModal.addEventListener('click', () => {
+                elements.taskModal.classList.remove('show');
+            });
+        }
+
+        async function loadTasks() {
+            try {
+                const response = await fetch(`/api/import/tasks?page=${state.currentPage}&size=${state.pageSize}&status=${state.currentStatusFilter}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    renderTasks(result.tasks);
+                    renderPagination(result.total);
+                    // 同时更新统计数据
+                    loadTaskStats();
+                }
+            } catch (error) {
+                showAlert('加载任务列表失败: ' + error.message, 'error', 'import');
+            }
+        }
+
+        function renderTasks(tasks) {
+            if (tasks.length === 0) {
+                elements.taskList.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px;">暂无任务</td></tr>';
+                return;
+            }
+
+            elements.taskList.innerHTML = tasks.map(task => `
+                <tr>
+                    <td style="font-family: monospace; font-size: 12px;">${task.taskId}</td>
+                    <td>${task.fileName}</td>
+                    <td>${task.targetTable}</td>
+                    <td><span class="status-badge ${task.status.toLowerCase()}">${getStatusText(task.status)}</span></td>
+                    <td>${task.importedRows.toLocaleString()}</td>
+                    <td>${task.totalRows.toLocaleString()}</td>
+                    <td>${task.progressPercentage}%</td>
+                    <td>${formatDateTime(task.createTime)}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="showTaskDetail('${task.taskId}')">详情</button>
+                        ${task.status === 'IMPORTING' || task.status === 'WAITING' ? 
+                            `<button class="btn btn-warning btn-sm" onclick="cancelTask('${task.taskId}')">停止</button>` : ''}
+                        <button class="btn btn-danger btn-sm" onclick="deleteTask('${task.taskId}')">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function showTaskDetail(taskId) {
+            try {
+                const response = await fetch(`/api/import/tasks/${taskId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    renderTaskDetail(result.task, result.batches);
+                    elements.taskModal.classList.add('show');
+                }
+            } catch (error) {
+                showAlert('加载任务详情失败: ' + error.message, 'error', 'import');
+            }
+        }
+
+        function renderTaskDetail(task, batches) {
+            let html = `
+                <h3 style="margin-bottom: 20px;">任务 ${task.taskId}</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>文件名</label>
+                        <input type="text" value="${task.fileName}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>目标表</label>
+                        <input type="text" value="${task.targetTable}" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>状态</label>
+                        <input type="text" value="${getStatusText(task.status)}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>进度</label>
+                        <input type="text" value="${task.importedRows.toLocaleString()} / ${task.totalRows.toLocaleString()} (${task.progressPercentage}%)" readonly>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>创建时间</label>
+                        <input type="text" value="${formatDateTime(task.createTime)}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>结束时间</label>
+                        <input type="text" value="${task.endTime ? formatDateTime(task.endTime) : '-'}" readonly>
+                    </div>
+                </div>
+            `;
+
+            if (task.errorMessage) {
+                html += `
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label>错误信息</label>
+                        <textarea readonly style="background: #fff1f0; border-color: #fde2e2;">${task.errorMessage}</textarea>
+                    </div>
+                `;
+            }
+
+            elements.taskDetailContent.innerHTML = html;
+        }
+
+        async function cancelTask(taskId) {
+            if (!confirm('确定要停止此任务吗？')) return;
+            
+            try {
+                const response = await fetch(`/api/import/tasks/${taskId}/cancel`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('任务停止请求已发送', 'success', 'import');
+                    loadTasks();
+                } else {
+                    showAlert('停止失败: ' + (result.message || '未知错误'), 'error', 'import');
+                }
+            } catch (error) {
+                showAlert('停止失败: ' + error.message, 'error', 'import');
+            }
+        }
+
+        async function deleteTask(taskId) {
+            if (!confirm('确定要删除此任务吗？')) return;
+            
+            try {
+                const response = await fetch(`/api/import/tasks/${taskId}`, { method: 'DELETE' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('任务已删除', 'success', 'import');
+                    loadTasks();
+                } else {
+                    showAlert('删除失败: ' + (result.message || '未知错误'), 'error', 'import');
+                }
+            } catch (error) {
+                showAlert('删除失败: ' + error.message, 'error', 'import');
+            }
+        }
+
+        function renderPagination(total) {
+            const totalPages = Math.ceil(total / state.pageSize);
+            
+            if (totalPages <= 1) {
+                elements.pagination.innerHTML = '';
+                return;
+            }
+
+            let html = `<button class="pagination-btn" ${state.currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${state.currentPage - 1})">上一页</button>`;
+            
+            const startPage = Math.max(1, state.currentPage - 2);
+            const endPage = Math.min(totalPages, state.currentPage + 2);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="pagination-btn ${i === state.currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            
+            html += `<button class="pagination-btn" ${state.currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${state.currentPage + 1})">下一页</button>`;
+            
+            elements.pagination.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            state.currentPage = page;
+            loadTasks();
+        }
+
+        // 数据源管理
+        async function loadDatasources() {
+            try {
+                const response = await fetch('/api/import/datasources');
+                const result = await response.json();
+                
+                if (result.success) {
+                    state.datasources = result.datasources;
+                    renderDatasourceSelect(result.datasources, result.default);
+                    
+                    if (state.currentTab === 'datasources') {
+                        renderDatasourceList();
+                    }
+                }
+            } catch (error) {
+                console.error('加载数据源失败:', error);
+            }
+        }
+
+        function renderDatasourceSelect(datasources, defaultDs) {
+            let html = '<option value="">请选择数据源</option>';
+            
+            datasources.forEach(ds => {
+                const selected = defaultDs && defaultDs.configId === ds.configId ? 'selected' : '';
+                const defaultLabel = ds.isDefault ? ' (默认)' : '';
+                html += `<option value="${ds.configId}" ${selected}>${ds.name}${defaultLabel}</option>`;
+            });
+            
+            elements.datasourceSelect.innerHTML = html;
+            
+            if (defaultDs) {
+                document.getElementById('datasource-select').value = defaultDs.configId;
+            }
+        }
+
+        async function loadDatasourceList() {
+            await loadDatasources();
+            renderDatasourceList();
+        }
+
+        function renderDatasourceList() {
+            if (state.datasources.length === 0) {
+                elements.datasourceList.innerHTML = '<div style="text-align: center; padding: 40px; color: #909399;">暂无数据源配置</div>';
+                return;
+            }
+
+            elements.datasourceList.innerHTML = state.datasources.map(ds => `
+                <div class="datasource-card ${ds.isDefault ? 'default' : ''}">
+                    <div class="datasource-name">
+                        ${ds.name}
+                        ${ds.isDefault ? '<span class="datasource-badge">默认</span>' : ''}
+                    </div>
+                    <div class="datasource-info">类型: ${ds.dbType}</div>
+                    <div class="datasource-info">主机: ${ds.host}:${ds.port}</div>
+                    <div class="datasource-info">数据库: ${ds.database}</div>
+                    <div class="datasource-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="editDatasource('${ds.configId}')">编辑</button>
+                        <button class="btn btn-warning btn-sm" onclick="testDatasourceConnection('${ds.configId}')">测试</button>
+                        ${!ds.isDefault ? `<button class="btn btn-primary btn-sm" onclick="setDefaultDatasource('${ds.configId}')">设为默认</button>` : ''}
+                        <button class="btn btn-danger btn-sm" onclick="deleteDatasource('${ds.configId}')">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openDatasourceModal(mode = 'add', configId = null) {
+            const titleEl = document.getElementById('datasource-modal-title');
+            
+            if (mode === 'add') {
+                titleEl.textContent = '添加数据源';
+                state.currentDatasourceId = null;
+                resetDatasourceForm();
+            } else {
+                titleEl.textContent = '编辑数据源';
+                const datasource = state.datasources.find(ds => ds.configId === configId);
+                if (datasource) {
+                    state.currentDatasourceId = configId;
+                    fillDatasourceForm(datasource);
+                }
+            }
+            
+            elements.datasourceModal.classList.add('show');
+        }
+
+        function resetDatasourceForm() {
+            document.getElementById('datasource-name').value = '';
+            document.getElementById('datasource-type').value = 'oceanbase';
+            document.getElementById('datasource-host').value = '';
+            document.getElementById('datasource-port').value = '';
+            document.getElementById('datasource-database').value = '';
+            document.getElementById('datasource-username').value = '';
+            document.getElementById('datasource-password').value = '';
+            document.getElementById('datasource-driver').value = '';
+            document.getElementById('datasource-url').value = '';
+            document.getElementById('datasource-default').checked = false;
+        }
+
+        function fillDatasourceForm(ds) {
+            document.getElementById('datasource-name').value = ds.name || '';
+            document.getElementById('datasource-type').value = ds.dbType || 'oceanbase';
+            document.getElementById('datasource-host').value = ds.host || '';
+            document.getElementById('datasource-port').value = ds.port || '';
+            document.getElementById('datasource-database').value = ds.database || '';
+            document.getElementById('datasource-username').value = ds.username || '';
+            document.getElementById('datasource-password').value = ds.password || '';
+            document.getElementById('datasource-driver').value = ds.driverClassName || '';
+            document.getElementById('datasource-url').value = ds.jdbcUrl || '';
+            document.getElementById('datasource-default').checked = ds.isDefault || false;
+        }
+
+        async function saveDatasource() {
+            const name = document.getElementById('datasource-name').value.trim();
+            if (!name) {
+                showAlert('请输入数据源名称', 'error', 'datasource');
+                return;
+            }
+
+            const datasourceData = {
+                configId: state.currentDatasourceId,
+                name: name,
+                dbType: document.getElementById('datasource-type').value,
+                host: document.getElementById('datasource-host').value.trim(),
+                port: parseInt(document.getElementById('datasource-port').value) || 2881,
+                database: document.getElementById('datasource-database').value.trim(),
+                username: document.getElementById('datasource-username').value.trim(),
+                password: document.getElementById('datasource-password').value,
+                driverClassName: document.getElementById('datasource-driver').value.trim(),
+                jdbcUrl: document.getElementById('datasource-url').value.trim(),
+                isDefault: document.getElementById('datasource-default').checked
+            };
+
+            const url = state.currentDatasourceId ? 
+                `/api/datasources/${state.currentDatasourceId}` : 
+                '/api/datasources';
+            
+            const method = state.currentDatasourceId ? 'PUT' : 'POST';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datasourceData)
+                });
+                
+                if (response.ok) {
+                    showAlert('数据源保存成功', 'success', 'datasource');
+                    elements.datasourceModal.classList.remove('show');
+                    await loadDatasources();
+                } else {
+                    throw new Error('保存失败');
+                }
+            } catch (error) {
+                showAlert('保存失败: ' + error.message, 'error', 'datasource');
+            }
+        }
+
+        async function setDefaultDatasource(configId) {
+            try {
+                const response = await fetch(`/api/datasources/${configId}/default`, {
+                    method: 'PUT'
+                });
+                
+                if (response.ok) {
+                    showAlert('已设为默认数据源', 'success', 'datasource');
+                    await loadDatasources();
+                } else {
+                    throw new Error('操作失败');
+                }
+            } catch (error) {
+                showAlert('操作失败: ' + error.message, 'error', 'datasource');
+            }
+        }
+
+        async function deleteDatasource(configId) {
+            if (!confirm('确定要删除此数据源吗？')) return;
+            
+            try {
+                const response = await fetch(`/api/datasources/${configId}`, { method: 'DELETE' });
+                
+                if (response.ok) {
+                    showAlert('数据源已删除', 'success', 'datasource');
+                    await loadDatasources();
+                } else {
+                    throw new Error('删除失败');
+                }
+            } catch (error) {
+                showAlert('删除失败: ' + error.message, 'error', 'datasource');
+            }
+        }
+
+        async function testDatasourceConnection(configId) {
+            try {
+                const response = await fetch(`/api/datasources/${configId}/test`, { method: 'POST' });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('连接成功！', 'success', 'datasource');
+                } else {
+                    showAlert('连接失败: ' + (result.message || '未知错误'), 'error', 'datasource');
+                }
+            } catch (error) {
+                showAlert('连接失败: ' + error.message, 'error', 'datasource');
+            }
+        }
+
+        // 事件绑定
+        elements.addDatasourceBtn.addEventListener('click', () => openDatasourceModal('add'));
+        elements.closeDatasourceModal.addEventListener('click', () => elements.datasourceModal.classList.remove('show'));
+        elements.cancelDatasourceBtn.addEventListener('click', () => elements.datasourceModal.classList.remove('show'));
+        elements.saveDatasourceBtn.addEventListener('click', saveDatasource);
+        elements.testConnectionBtn.addEventListener('click', async () => {
+            if (state.currentDatasourceId) {
+                await testDatasourceConnection(state.currentDatasourceId);
+            } else {
+                showAlert('请先保存数据源', 'error', 'datasource');
+            }
+        });
+
+        // 关闭 modal 时点击背景
+        elements.datasourceModal.addEventListener('click', (e) => {
+            if (e.target === elements.datasourceModal) {
+                elements.datasourceModal.classList.remove('show');
+            }
+        });
+        elements.taskModal.addEventListener('click', (e) => {
+            if (e.target === elements.taskModal) {
+                elements.taskModal.classList.remove('show');
+            }
+        });
+
+        // 工具函数
+        function showAlert(message, type, location = 'import') {
+            const alertEl = location === 'import' ? 
+                elements.importAlert : elements.datasourceAlert;
+                
+            const className = type === 'success' ? 'alert-success' : 
+                              type === 'error' ? 'alert-error' : 'alert-info';
+                              
+            alertEl.innerHTML = `<div class="alert ${className}">${message}</div>`;
+            
+            setTimeout(() => alertEl.innerHTML = '', 5000);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatDateTime(dateTimeStr) {
+            if (!dateTimeStr) return '-';
+            const date = new Date(dateTimeStr);
+            return date.toLocaleString('zh-CN');
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'WAITING': '等待中',
+                'IMPORTING': '导入中',
+                'COMPLETED': '已完成',
+                'FAILED': '失败',
+                'STOPPED': '已停止'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 暴露全局函数
+        window.showTaskDetail = showTaskDetail;
+        window.cancelTask = cancelTask;
+        window.deleteTask = deleteTask;
+        window.goToPage = goToPage;
+        window.editDatasource = (configId) => openDatasourceModal('edit', configId);
+        window.setDefaultDatasource = setDefaultDatasource;
+        window.deleteDatasource = deleteDatasource;
+        window.testDatasourceConnection = testDatasourceConnection;
+
+        // 启动应用
+        init();
+    </script>
+</body>
+</html>
